@@ -31,6 +31,7 @@ class TecmundoSpider(scrapy.Spider):
         if text:
             text = text[0][:text[0].find("<p><span>Cupons")]
             text = remove_tags(text)
+            text = text.replace('</div', '')
 
         notice = NoticiasItem(title=title, author=author, text=text, link=link, image=image, source="Tecmundo",
                               uuid=str(uuid.uuid4()))
