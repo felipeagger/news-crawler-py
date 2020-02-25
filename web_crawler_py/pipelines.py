@@ -2,6 +2,7 @@
 import json
 import pymongo
 import boto3
+from boto3.dynamodb.conditions import Attr
 
 
 class WebCrawlerPyPipeline(object):
@@ -31,8 +32,13 @@ class WebCrawlerPyPipeline(object):
         # Insert On MongoDB
         self.db[self.collection_name].insert(dict(item))
 
-        # Insert on DynamoDB
-        self.table.put_item(
-            Item=dict(item)
+        # Insert on DynamoDB if not exists
+        response = self.table.scan(
+            FilterExpression=Attr('title').eq(item['title'])
         )
+
+        if not response['Items']:
+            self.table.put_item(
+                Item=dict(item)
+            )
         return item
